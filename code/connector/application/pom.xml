@@ -14,6 +14,10 @@
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 
+  <properties>
+    <springbootversion>3.1.4</springbootversion>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.nancho313.loqui.connector</groupId>
@@ -23,6 +27,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-test</artifactId>
+      <version>${springbootversion}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
