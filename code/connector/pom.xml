@@ -3,20 +3,16 @@
       
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>3.1.4</version>
+    <groupId>com.nancho313.loqui</groupId>
+    <artifactId>parent-pom</artifactId>
+    <version>1.1.1</version>
     <relativePath/>
   </parent>
   <groupId>com.nancho313.loqui.connector</groupId>
   <artifactId>connector-parent</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>connector</name>
-      
-  <!-- FIXME change it to the project's website -->
-      
-  <url>http://www.example.com</url>
+  <name>pom</name>
       
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -24,44 +20,51 @@
     <maven.compiler.target>21</maven.compiler.target>
     <java.version>21</java.version>
   </properties>
-      
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.nancho313.loqui.connector</groupId>
+        <artifactId>domain</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nancho313.loqui.connector</groupId>
+        <artifactId>application</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nancho313.loqui.connector</groupId>
+        <artifactId>infrastructure</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nancho313.loqui.connector</groupId>
+        <artifactId>contract</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nancho313.loqui.connector</groupId>
+        <artifactId>boot</artifactId>
+        <version>${version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <modules>
-    <module>commons</module>
+    <module>domain</module>
     <module>application</module>
     <module>infrastructure</module>
     <module>contract</module>
     <module>boot</module>
   </modules>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-devtools</artifactId>
-      <scope>runtime</scope>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <optional>true</optional>
-    </dependency>
-  </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>
-              <groupId>org.projectlombok</groupId>
-              <artifactId>lombok</artifactId>
-            </exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub OWNER Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/nancho313/loqui-connector</url>
+    </repository>
+  </distributionManagement>
   
 </project>

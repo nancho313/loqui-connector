@@ -8,41 +8,20 @@
   </parent>
 
   <artifactId>boot</artifactId>
-  <version>${parent.version}</version>
-
   <name>boot</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
 
   <dependencies>
     <dependency>
       <groupId>com.nancho313.loqui.connector</groupId>
-      <artifactId>commons</artifactId>
-      <version>${version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.nancho313.loqui.connector</groupId>
-      <artifactId>application</artifactId>
-      <version>${version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.nancho313.loqui.connector</groupId>
       <artifactId>contract</artifactId>
-      <version>${version}</version>
     </dependency>
     <dependency>
       <groupId>com.nancho313.loqui.connector</groupId>
       <artifactId>infrastructure</artifactId>
-      <version>${version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -60,5 +39,23 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <finalName>connector-${parent.version}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
