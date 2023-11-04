@@ -15,6 +15,28 @@
       <groupId>com.nancho313.loqui.connector</groupId>
       <artifactId>domain</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.nancho313.loqui.connector</groupId>
+      <artifactId>websocket</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.kafka</groupId>
+      <artifactId>spring-kafka</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.nancho313.loqui</groupId>
+      <artifactId>events</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

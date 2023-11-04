@@ -5,7 +5,7 @@
   <parent>
     <groupId>com.nancho313.loqui</groupId>
     <artifactId>parent-pom</artifactId>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <relativePath/>
   </parent>
   <groupId>com.nancho313.loqui.connector</groupId>
@@ -45,6 +45,11 @@
       </dependency>
       <dependency>
         <groupId>com.nancho313.loqui.connector</groupId>
+        <artifactId>websocket</artifactId>
+        <version>${version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.nancho313.loqui.connector</groupId>
         <artifactId>boot</artifactId>
         <version>${version}</version>
       </dependency>
@@ -54,6 +59,7 @@
   <modules>
     <module>domain</module>
     <module>application</module>
+    <module>websocket</module>
     <module>infrastructure</module>
     <module>contract</module>
     <module>boot</module>

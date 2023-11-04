@@ -1,5 +1,6 @@
 package com.nancho313.loqui.connector.contract.websocket.config;
 
+import com.nancho313.loqui.connector.websocket.dto.AuthUser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
