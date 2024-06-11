@@ -1,0 +1,60 @@
+name: Run mutation tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./code/connector
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          server-id: github
+          settings-path: ${{ github.workspace }}
+
+      - name: Get Settings.xml
+        env:
+          READ_FILES_TOKEN: ${{ secrets.READ_FILES_TOKEN }}
+        run: |
+          curl -H "Authorization: token ${READ_FILES_TOKEN}" -o settings.xml https://raw.githubusercontent.com/nancho313/loqui-devops/main/workflows/java/settings.xml
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run mutation tests
+        run: mvn test-compile org.pitest:pitest-maven:mutationCoverage -Dskipmutationtests=false -s $GITHUB_WORKSPACE/code/connector/settings.xml
+        env:
+          MVN_USERNAME: nancho313
+          MVN_PASSWORD: ${{ secrets.LOQUI_POM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Aggregate result
+        run: cd pitest-coverage && mvn com.nancho313.loqui:pitest-aggregator-maven-plugin:1.0.1:generate -U -s $GITHUB_WORKSPACE/code/connector/settings.xml
+        env:
+          MVN_USERNAME: nancho313
+          MVN_PASSWORD: ${{ secrets.LOQUI_POM_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Archive results
+        uses: actions/upload-artifact@v4
+        with:
+          name: mutation-tests-result
+          path: ./code/connector/pitest-coverage/target

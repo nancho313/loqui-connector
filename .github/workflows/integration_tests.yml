@@ -1,0 +1,47 @@
+name: Run integration tests
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./code/connector
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 21
+      uses: actions/setup-java@v3
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        server-id: github
+        settings-path: ${{ github.workspace }}
+
+    - name: Get Settings.xml
+      env:
+        READ_FILES_TOKEN: ${{ secrets.READ_FILES_TOKEN }}
+      run: |
+        curl -H "Authorization: token ${READ_FILES_TOKEN}" -o settings.xml https://raw.githubusercontent.com/nancho313/loqui-devops/main/workflows/java/settings.xml
+
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+
+    - name: Build with Maven
+      run: mvn clean install -DskipTests -s $GITHUB_WORKSPACE/code/connector/settings.xml && cd boot && mvn -B integration-test -s $GITHUB_WORKSPACE/code/connector/settings.xml
+      env:
+        MVN_USERNAME: nancho313
+        MVN_PASSWORD: ${{ secrets.LOQUI_POM_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
