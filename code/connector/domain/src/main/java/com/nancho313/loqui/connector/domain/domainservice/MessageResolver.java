@@ -16,7 +16,11 @@ public final class MessageResolver {
   
   public List<RedirectedTextMessageEvent> redirectMessage(UserConnection senderUser, List<UserConnection> targetUsers,
                                                           String content) {
-    
+
+    assert(senderUser != null);
+    assert(targetUsers != null);
+    assert(content != null && !content.isBlank());
+
     List<RedirectedTextMessageEvent> result = new ArrayList<>();
     
     targetUsers.stream().filter(UserConnection::isAvailable).forEach(userConnection -> {

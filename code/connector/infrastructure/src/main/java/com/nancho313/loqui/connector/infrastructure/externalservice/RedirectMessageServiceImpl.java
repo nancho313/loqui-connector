@@ -17,6 +17,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Component
@@ -45,9 +46,15 @@ public class RedirectMessageServiceImpl implements RedirectMessageService {
   }
   
   public boolean sendMessage(TextMessage message) {
-    
+
+    var sessions = sessionHub.getSessionsByIdUser(message.targetUser());
+
+    if(sessions.isEmpty()) {
+      throw new NoSuchElementException("No session was found for the user id %s.".formatted(message.targetUser()));
+    }
+
     try {
-      var sessions = sessionHub.getSessionsByIdUser(message.targetUser());
+
       var jsonToSend = parseMessageToJson(new InputChatMessageDto(message.senderUser(), message.targetUser(),
               message.content(), message.date()));
       var textMessage = new org.springframework.web.socket.TextMessage(jsonToSend);
@@ -57,7 +64,6 @@ public class RedirectMessageServiceImpl implements RedirectMessageService {
       log.error("Something went wrong while sending message to user through websocket.", e);
       return Boolean.FALSE;
     }
-    
   }
   
   private void sendMessageThroughWebSocket(WebSocketSession session,

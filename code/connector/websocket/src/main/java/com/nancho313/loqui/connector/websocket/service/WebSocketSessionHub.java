@@ -1,6 +1,5 @@
 package com.nancho313.loqui.connector.websocket.service;
 
-import com.nancho313.loqui.connector.websocket.dto.AuthUser;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.List;

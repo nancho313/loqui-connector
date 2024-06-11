@@ -1,7 +1,6 @@
 package com.nancho313.loqui.connector.domain.aggregate;
 
 import com.nancho313.loqui.connector.domain.event.DomainEvent;
-import com.nancho313.loqui.connector.domain.externalservice.IdGenerator;
 import com.nancho313.loqui.connector.domain.vo.CurrentDate;
 import com.nancho313.loqui.connector.domain.vo.UserConnectionId;
 import com.nancho313.loqui.connector.domain.vo.UserConnectionStatus;
@@ -21,6 +20,9 @@ import static com.nancho313.loqui.commons.ObjectValidator.isNull;
 public class UserConnection extends DomainAggregate {
   
   private static final String ERROR_MESSAGE = "Cannot create an UserConnection object. Errors -> %s";
+
+  private static final String INVALID_STATUS_PERMUTATION_ERROR_MESSAGE = "Invalid status permutation. The " +
+      "UserConnection %s cannot change from %s to %s.";
   
   UserConnectionId id;
   
@@ -53,23 +55,53 @@ public class UserConnection extends DomainAggregate {
   
   public static UserConnection create(UserConnectionId id, String idUser, String username, String connectorId) {
     
-    var event = new ConnectedUserEvent(id, idUser, username, connectorId, LocalDateTime.now());
+    var event = new ConnectedUserConnectionEvent(id, idUser, username, connectorId, LocalDateTime.now());
     return new UserConnection(List.of(event), id, idUser, username, connectorId,
             UserConnectionStatus.AVAILABLE, CurrentDate.now());
   }
   
   public UserConnection disconnect() {
     
-    var event = new DisconnectedUserEvent(this.id, idUser, this.username, this.connectorId, LocalDateTime.now());
-    return new UserConnection(List.of(event), this.id, this.idUser, this.username, this.connectorId,
-            UserConnectionStatus.DISCONNECTED, this.currentDate.update());
+    var event = new DisconnectedUserConnectionEvent(this.id, idUser, this.username, this.connectorId, LocalDateTime.now());
+    return changeStatus(List.of(event), UserConnectionStatus.DISCONNECTED);
+  }
+
+  public UserConnection end() {
+
+    var event = new EndedUserConnectionEvent(this.id, idUser, this.username, this.connectorId, LocalDateTime.now());
+    return changeStatus(List.of(event), UserConnectionStatus.ENDED);
   }
   
   public boolean isAvailable() {
     
     return UserConnectionStatus.AVAILABLE.equals(this.status);
   }
-  
+
+  private UserConnection changeStatus(List<DomainEvent> events, UserConnectionStatus newStatus) {
+
+    assert (newStatus != null);
+    validateStatusPermutation(newStatus);
+    return new UserConnection(events, this.id, this.idUser, this.username, this.connectorId,
+        newStatus, this.currentDate.update());
+  }
+
+  private void validateStatusPermutation(UserConnectionStatus newStatus) {
+
+    assert (newStatus != null);
+    List<UserConnectionStatus> allowedStatuses = Collections.emptyList();
+
+    if (status.equals(UserConnectionStatus.AVAILABLE)) {
+
+      allowedStatuses = List.of(UserConnectionStatus.DISCONNECTED, UserConnectionStatus.ENDED);
+    }
+
+    if (!allowedStatuses.contains(newStatus)) {
+
+      throw new IllegalStateException(INVALID_STATUS_PERMUTATION_ERROR_MESSAGE.formatted(this.getId().id(),
+          this.status, newStatus));
+    }
+  }
+
   private void validate() {
     
     List<String> errors = new ArrayList<>();
@@ -81,7 +113,7 @@ public class UserConnection extends DomainAggregate {
     
     if (isEmptyString(idUser)) {
       
-      errors.add("The id user cannot be empty.");
+      errors.add("The user id cannot be empty.");
     }
     
     if (isEmptyString(username)) {
@@ -109,12 +141,16 @@ public class UserConnection extends DomainAggregate {
       throw new IllegalArgumentException(ERROR_MESSAGE.formatted(errors));
     }
   }
-  
-  public record ConnectedUserEvent(UserConnectionId id, String idUser, String username, String connectorId,
-                                   LocalDateTime date) implements DomainEvent {
+
+  public record ConnectedUserConnectionEvent(UserConnectionId id, String idUser, String username, String connectorId,
+                                             LocalDateTime date) implements DomainEvent {
   }
   
-  public record DisconnectedUserEvent(UserConnectionId id, String idUser, String username, String connectorId,
+  public record DisconnectedUserConnectionEvent(UserConnectionId id, String idUser, String username, String connectorId,
+                                                LocalDateTime date) implements DomainEvent {
+  }
+
+  public record EndedUserConnectionEvent(UserConnectionId id, String idUser, String username, String connectorId,
                                       LocalDateTime date) implements DomainEvent {
   }
 }
