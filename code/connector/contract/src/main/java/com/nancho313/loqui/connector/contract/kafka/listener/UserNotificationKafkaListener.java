@@ -42,7 +42,7 @@ public class UserNotificationKafkaListener {
               sentMessage.getContent().toString(), value.getConnectorId().toString(), dateFromMilliseconds);
       sendTextMessageCommandHandler.handle(command);
     } else {
-      throw new UnsupportedOperationException("Handling notifications is not supported yet.");
+      throw new UnsupportedOperationException("Handling notifications is not supported, yet.");
     }
   }
   
