@@ -29,6 +29,10 @@
             <groupId>com.nancho313.loqui.connector</groupId>
             <artifactId>infrastructure</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.nancho313.loqui.connector</groupId>
+            <artifactId>boot</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
