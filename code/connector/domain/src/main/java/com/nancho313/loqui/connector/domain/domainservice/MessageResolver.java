@@ -6,6 +6,7 @@ import com.nancho313.loqui.connector.domain.externalservice.RedirectMessageServi
 import com.nancho313.loqui.connector.domain.vo.TextMessage;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +16,7 @@ public final class MessageResolver {
   private final RedirectMessageService redirectMessage;
   
   public List<RedirectedTextMessageEvent> redirectMessage(UserConnection senderUser, List<UserConnection> targetUsers,
-                                                          String content) {
+                                                          String content, LocalDateTime date) {
 
     assert(senderUser != null);
     assert(targetUsers != null);
@@ -26,7 +27,7 @@ public final class MessageResolver {
     targetUsers.stream().filter(UserConnection::isAvailable).forEach(userConnection -> {
       
       var textMessage = TextMessage.create(senderUser.getIdUser(), userConnection.getIdUser(), content,
-              userConnection.getConnectorId());
+              userConnection.getConnectorId(), date);
       var wasSent = redirectMessage.redirectMessage(textMessage);
       if (wasSent) {
         

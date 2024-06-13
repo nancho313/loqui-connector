@@ -9,6 +9,7 @@ import lombok.Getter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -64,7 +65,7 @@ class EventResolverFactoryTest {
     currentEventResolvers.add(new EventResolverUtilTest());
 
     var message = TextMessage.create(UUID.randomUUID().toString(), UUID.randomUUID().toString(),
-        "This is the content", UUID.randomUUID().toString());
+        "This is the content", UUID.randomUUID().toString(), LocalDateTime.now());
 
     var event = new MessageResolver.RedirectedTextMessageEvent(message);
 

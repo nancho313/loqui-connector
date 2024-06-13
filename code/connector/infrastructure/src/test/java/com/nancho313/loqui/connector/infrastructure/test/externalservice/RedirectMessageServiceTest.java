@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -46,7 +47,8 @@ class RedirectMessageServiceTest {
     var targetUser = UUID.randomUUID().toString();
     var content = "This is the message to send";
     var connector = UUID.randomUUID().toString();
-    var message = TextMessage.create(senderUser, targetUser, content, connector);
+    var date = LocalDateTime.now().minusDays(1);
+    var message = TextMessage.create(senderUser, targetUser, content, connector, date);
     when(emitterMock.sendMessage(any(UserNotificationEvent.class), anyList())).thenReturn(Boolean.TRUE);
 
     // Act
@@ -75,7 +77,8 @@ class RedirectMessageServiceTest {
     var targetUser = UUID.randomUUID().toString();
     var content = "This is the message to send";
     var connector = UUID.randomUUID().toString();
-    var message = TextMessage.create(senderUser, targetUser, content, connector);
+    var date = LocalDateTime.now().minusDays(1);
+    var message = TextMessage.create(senderUser, targetUser, content, connector, date);
     when(emitterMock.sendMessage(any(UserNotificationEvent.class), anyList())).thenReturn(Boolean.FALSE);
 
     // Act
@@ -93,7 +96,8 @@ class RedirectMessageServiceTest {
     var targetUser = UUID.randomUUID().toString();
     var content = "This is the message to send";
     var connector = UUID.randomUUID().toString();
-    var message = TextMessage.create(senderUser, targetUser, content, connector);
+    var date = LocalDateTime.now().minusDays(1);
+    var message = TextMessage.create(senderUser, targetUser, content, connector, date);
 
     var webSocketSession = TestWebSocketSession.create(targetUser, "foo");
     webSocketSessionHub.addSession(webSocketSession);
@@ -120,7 +124,8 @@ class RedirectMessageServiceTest {
     var targetUser = UUID.randomUUID().toString();
     var content = "This is the message to send";
     var connector = UUID.randomUUID().toString();
-    var message = TextMessage.create(senderUser, targetUser, content, connector);
+    var date = LocalDateTime.now().minusDays(1);
+    var message = TextMessage.create(senderUser, targetUser, content, connector, date);
 
     var webSocketSession = TestWebSocketSession.create(targetUser, "foo");
     webSocketSession.enableErrorMode();
@@ -148,7 +153,8 @@ class RedirectMessageServiceTest {
     var targetUser = UUID.randomUUID().toString();
     var content = "This is the message to send";
     var connector = UUID.randomUUID().toString();
-    var message = TextMessage.create(senderUser, targetUser, content, connector);
+    var date = LocalDateTime.now().minusDays(1);
+    var message = TextMessage.create(senderUser, targetUser, content, connector, date);
 
     // Act & Assert
     var exception = assertThrows(NoSuchElementException.class, () -> sut.sendMessage(message));

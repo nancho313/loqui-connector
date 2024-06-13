@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,12 +37,13 @@ class MessageResolverTest {
     var senderUser = buildUserConnection("foo");
     var targetUser1 = buildUserConnection("foo1");
     var targetUser2 = buildUserConnection("foo2");
+    var date = LocalDateTime.now().minusDays(1);
     List<UserConnection> targetUsers = List.of(targetUser1, targetUser2);
     var content = "This is the content of the message.";
     when(redirectMessageMock.redirectMessage(any())).thenReturn(Boolean.TRUE);
 
     // Act
-    var result = sut.redirectMessage(senderUser, targetUsers, content);
+    var result = sut.redirectMessage(senderUser, targetUsers, content, date);
 
     // Assert
     assertThat(result).isNotNull().hasSize(2);
@@ -86,10 +88,11 @@ class MessageResolverTest {
     var targetUser2 = buildUserConnection("foo2").disconnect();
     List<UserConnection> targetUsers = List.of(targetUser1, targetUser2);
     var content = "This is the content of the message.";
+    var date = LocalDateTime.now().minusDays(1);
     when(redirectMessageMock.redirectMessage(any())).thenReturn(Boolean.TRUE);
 
     // Act
-    var result = sut.redirectMessage(senderUser, targetUsers, content);
+    var result = sut.redirectMessage(senderUser, targetUsers, content, date);
 
     // Assert
     assertThat(result).isNotNull().hasSize(1);
@@ -118,10 +121,11 @@ class MessageResolverTest {
     var targetUser1 = buildUserConnection("foo1").disconnect();
     var targetUser2 = buildUserConnection("foo2").disconnect();
     List<UserConnection> targetUsers = List.of(targetUser1, targetUser2);
+    var date = LocalDateTime.now().minusDays(1);
     var content = "This is the content of the message.";
 
     // Act
-    var result = sut.redirectMessage(senderUser, targetUsers, content);
+    var result = sut.redirectMessage(senderUser, targetUsers, content, date);
 
     // Assert
     assertThat(result).isNotNull().isEmpty();
@@ -139,10 +143,11 @@ class MessageResolverTest {
     var targetUser2 = buildUserConnection("foo2");
     List<UserConnection> targetUsers = List.of(targetUser1, targetUser2);
     var content = "This is the content of the message.";
+    var date = LocalDateTime.now().minusDays(1);
     when(redirectMessageMock.redirectMessage(any())).thenReturn(Boolean.FALSE);
 
     // Act
-    var result = sut.redirectMessage(senderUser, targetUsers, content);
+    var result = sut.redirectMessage(senderUser, targetUsers, content, date);
 
     // Assert
     assertThat(result).isNotNull().isEmpty();

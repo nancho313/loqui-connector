@@ -18,13 +18,15 @@ import java.util.NoSuchElementException;
 
 @Service
 public class RedirectMessageCommandHandler extends CommandHandler<RedirectMessageCommand> {
-  
+
   private static final String USER_CONNECTION_NOT_FOUND = "The user connection with id %s does not exist.";
-  
+
+  private static final String USER_CONNECTIONS_TARGET_USER_NOT_FOUND = "There are not connections related to the user id %s.";
+
   private final UserConnectionRepository userConnectionRepository;
-  
+
   private final MessageResolver messageResolver;
-  
+
   public RedirectMessageCommandHandler(Validator validator, EventResolverFactory eventResolverFactory,
                                        UserConnectionRepository userConnectionRepository,
                                        RedirectMessageService redirectMessage) {
@@ -32,16 +34,20 @@ public class RedirectMessageCommandHandler extends CommandHandler<RedirectMessag
     this.userConnectionRepository = userConnectionRepository;
     this.messageResolver = new MessageResolver(redirectMessage);
   }
-  
+
   protected List<DomainEvent> handleCommand(RedirectMessageCommand command) {
-    
+
     var senderUser =
             userConnectionRepository.findById(UserConnectionId.of(command.connection()))
                     .orElseThrow(() -> new NoSuchElementException(USER_CONNECTION_NOT_FOUND.formatted(command.connection())));
-    
+
     List<UserConnection> availableConnections =
             userConnectionRepository.findAllAvailableByIdUser(command.targetIdUser());
-    
-    return new ArrayList<>(messageResolver.redirectMessage(senderUser, availableConnections, command.content()));
+
+    if (availableConnections.isEmpty()) {
+      throw new NoSuchElementException(USER_CONNECTIONS_TARGET_USER_NOT_FOUND.formatted(command.targetIdUser()));
+    }
+
+    return new ArrayList<>(messageResolver.redirectMessage(senderUser, availableConnections, command.content(), command.date()));
   }
 }
