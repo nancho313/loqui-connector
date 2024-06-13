@@ -15,41 +15,46 @@ import java.util.Map;
 
 @Slf4j
 public class JwtInterceptor implements HandshakeInterceptor {
-  
+
   private static final String SAFE_PROTOCOL = "LOQUI_SAFE";
   private static final String SEC_WEB_SOCKET_PROTOCOL = "Sec-WebSocket-Protocol";
   private static final String AUTH_USER_KEY = "authUser";
   private final SecretKey secretKey;
-  
+
   public JwtInterceptor(String jwtKey) {
     this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtKey));
   }
-  
+
   public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                  Map<String, Object> attributes) {
-    
+
     try {
-      
+
       var token = getTokenFromRequest(request);
       var claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
       var authUser = new AuthUser(claims.getPayload().getSubject(), claims.getPayload().get("lqu", String.class));
       attributes.put(AUTH_USER_KEY, authUser);
       return true;
-      
+
     } catch (Exception e) {
-      
+
       return false;
     }
   }
-  
+
   public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                              Exception exception) {
-    
+
     response.getHeaders().add(SEC_WEB_SOCKET_PROTOCOL, SAFE_PROTOCOL);
   }
-  
+
   private String getTokenFromRequest(ServerHttpRequest request) {
-    
-    return request.getHeaders().get(SEC_WEB_SOCKET_PROTOCOL).get(0).split(",")[0];
+
+    var authHeader = request.getHeaders().getOrEmpty(SEC_WEB_SOCKET_PROTOCOL);
+    if (authHeader.isEmpty()) {
+
+      throw new RuntimeException("No security web protocol header was found.");
+    }
+    return authHeader.getFirst().split(",")[0];
   }
 }
